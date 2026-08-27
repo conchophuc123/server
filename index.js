@@ -1,20 +1,27 @@
-/**
- * GD Multiplayer Mod Socket Server
- * Version 1.0
-**/
 const http = require('http');
-const server = http.createServer();
-const sio = require('socket.io')(server);
+
+// Tạo phản hồi HTTP đơn giản để không bị treo load trên trình duyệt
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('GD Multiplayer Server is Running!');
+});
+
+const sio = require('socket.io')(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 let playerTemplate = {
-    id: Number, // Socket ID
-    x: Number, // Player X pos
-    y: Number, // Player Y pos
-    rotation: Number, // Player rotation
-    scale: Number, // Player scale (For mini portals)
-    flip: Boolean, // If the player is upside down or not
-    tag: Number, // Randomly generated number (ID)
-    gamemode: Number, // Gamemode ID
+    id: Number,
+    x: Number,
+    y: Number,
+    rotation: Number,
+    scale: Number,
+    flip: Boolean,
+    tag: Number,
+    gamemode: Number,
     cube: Number,
     ship: Number,
     ball: Number,
@@ -22,9 +29,9 @@ let playerTemplate = {
     wave: Number,
     robot: Number,
     spider: Number,
-    col1: [Number, Number, Number], // RGB
-    col2: [Number, Number, Number], // RGB
-    glow: Boolean, // Level ID
+    col1: [Number, Number, Number],
+    col2: [Number, Number, Number],
+    glow: Boolean,
     level: Number,
     lastFrame: Number
 };
@@ -113,7 +120,6 @@ sio.on('connection', socket => {
             player.flip = pos.flip;
             player.gamemode = pos.gamemode;
 
-            // Icon & Colors
             player.cube = pos.cube;
             player.ship = pos.ship;
             player.ball = pos.ball;
@@ -142,7 +148,6 @@ sio.on('connection', socket => {
     });
 });
 
-// FIX PORT CHO RENDER
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, async () => {
     console.log(`Server Listening on port @${PORT}`);
